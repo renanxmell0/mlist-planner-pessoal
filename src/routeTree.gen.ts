@@ -10,11 +10,65 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CalendarioRouteImport } from './routes/calendario'
+import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as DiarioRouteImport } from './routes/diario'
+import { Route as EstudosRouteImport } from './routes/estudos'
+import { Route as HabitosRouteImport } from './routes/habitos'
+import { Route as HumorRouteImport } from './routes/humor'
+import { Route as MetasRouteImport } from './routes/metas'
+import { Route as ProgressoRouteImport } from './routes/progresso'
+import { Route as RotinaRouteImport } from './routes/rotina'
 import { Route as TarefasRouteImport } from './routes/tarefas'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalendarioRoute = CalendarioRouteImport.update({
+  id: '/calendario',
+  path: '/calendario',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiarioRoute = DiarioRouteImport.update({
+  id: '/diario',
+  path: '/diario',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstudosRoute = EstudosRouteImport.update({
+  id: '/estudos',
+  path: '/estudos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HabitosRoute = HabitosRouteImport.update({
+  id: '/habitos',
+  path: '/habitos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HumorRoute = HumorRouteImport.update({
+  id: '/humor',
+  path: '/humor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MetasRoute = MetasRouteImport.update({
+  id: '/metas',
+  path: '/metas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgressoRoute = ProgressoRouteImport.update({
+  id: '/progresso',
+  path: '/progresso',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RotinaRoute = RotinaRouteImport.update({
+  id: '/rotina',
+  path: '/rotina',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TarefasRoute = TarefasRouteImport.update({
@@ -25,27 +79,97 @@ const TarefasRoute = TarefasRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calendario': typeof CalendarioRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/diario': typeof DiarioRoute
+  '/estudos': typeof EstudosRoute
+  '/habitos': typeof HabitosRoute
+  '/humor': typeof HumorRoute
+  '/metas': typeof MetasRoute
+  '/progresso': typeof ProgressoRoute
+  '/rotina': typeof RotinaRoute
   '/tarefas': typeof TarefasRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calendario': typeof CalendarioRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/diario': typeof DiarioRoute
+  '/estudos': typeof EstudosRoute
+  '/habitos': typeof HabitosRoute
+  '/humor': typeof HumorRoute
+  '/metas': typeof MetasRoute
+  '/progresso': typeof ProgressoRoute
+  '/rotina': typeof RotinaRoute
   '/tarefas': typeof TarefasRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/calendario': typeof CalendarioRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/diario': typeof DiarioRoute
+  '/estudos': typeof EstudosRoute
+  '/habitos': typeof HabitosRoute
+  '/humor': typeof HumorRoute
+  '/metas': typeof MetasRoute
+  '/progresso': typeof ProgressoRoute
+  '/rotina': typeof RotinaRoute
   '/tarefas': typeof TarefasRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/tarefas'
+  fullPaths:
+    | '/'
+    | '/calendario'
+    | '/configuracoes'
+    | '/diario'
+    | '/estudos'
+    | '/habitos'
+    | '/humor'
+    | '/metas'
+    | '/progresso'
+    | '/rotina'
+    | '/tarefas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/tarefas'
-  id: '__root__' | '/' | '/tarefas'
+  to:
+    | '/'
+    | '/calendario'
+    | '/configuracoes'
+    | '/diario'
+    | '/estudos'
+    | '/habitos'
+    | '/humor'
+    | '/metas'
+    | '/progresso'
+    | '/rotina'
+    | '/tarefas'
+  id:
+    | '__root__'
+    | '/'
+    | '/calendario'
+    | '/configuracoes'
+    | '/diario'
+    | '/estudos'
+    | '/habitos'
+    | '/humor'
+    | '/metas'
+    | '/progresso'
+    | '/rotina'
+    | '/tarefas'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CalendarioRoute: typeof CalendarioRoute
+  ConfiguracoesRoute: typeof ConfiguracoesRoute
+  DiarioRoute: typeof DiarioRoute
+  EstudosRoute: typeof EstudosRoute
+  HabitosRoute: typeof HabitosRoute
+  HumorRoute: typeof HumorRoute
+  MetasRoute: typeof MetasRoute
+  ProgressoRoute: typeof ProgressoRoute
+  RotinaRoute: typeof RotinaRoute
   TarefasRoute: typeof TarefasRoute
 }
 
@@ -56,6 +180,69 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calendario': {
+      id: '/calendario'
+      path: '/calendario'
+      fullPath: '/calendario'
+      preLoaderRoute: typeof CalendarioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configuracoes': {
+      id: '/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diario': {
+      id: '/diario'
+      path: '/diario'
+      fullPath: '/diario'
+      preLoaderRoute: typeof DiarioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estudos': {
+      id: '/estudos'
+      path: '/estudos'
+      fullPath: '/estudos'
+      preLoaderRoute: typeof EstudosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/habitos': {
+      id: '/habitos'
+      path: '/habitos'
+      fullPath: '/habitos'
+      preLoaderRoute: typeof HabitosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/humor': {
+      id: '/humor'
+      path: '/humor'
+      fullPath: '/humor'
+      preLoaderRoute: typeof HumorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/metas': {
+      id: '/metas'
+      path: '/metas'
+      fullPath: '/metas'
+      preLoaderRoute: typeof MetasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/progresso': {
+      id: '/progresso'
+      path: '/progresso'
+      fullPath: '/progresso'
+      preLoaderRoute: typeof ProgressoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rotina': {
+      id: '/rotina'
+      path: '/rotina'
+      fullPath: '/rotina'
+      preLoaderRoute: typeof RotinaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tarefas': {
@@ -70,6 +257,15 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CalendarioRoute: CalendarioRoute,
+  ConfiguracoesRoute: ConfiguracoesRoute,
+  DiarioRoute: DiarioRoute,
+  EstudosRoute: EstudosRoute,
+  HabitosRoute: HabitosRoute,
+  HumorRoute: HumorRoute,
+  MetasRoute: MetasRoute,
+  ProgressoRoute: ProgressoRoute,
+  RotinaRoute: RotinaRoute,
   TarefasRoute: TarefasRoute,
 }
 export const routeTree = rootRouteImport
