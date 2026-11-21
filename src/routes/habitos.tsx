@@ -32,7 +32,7 @@ function Page() {
     <div className="space-y-6">
       <PageHeader title="Hábitos" subtitle="Marque o que fez em cada dia." actions={<><Button variant="outline" className="h-11" onClick={() => setShowArchived(!showArchived)}>{showArchived ? "Ver ativos" : "Ver arquivados"}</Button><Button className="h-11" onClick={() => edit.show()}><Plus /> Novo hábito</Button></>} />
       {list.length === 0 ? <EmptyState title={showArchived ? "Nenhum hábito arquivado" : "Nenhum hábito ainda"} text={showArchived ? undefined : "Crie um hábito e escolha em quais dias ele vale."} action={!showArchived && <Button onClick={() => edit.show()}><Plus /> Criar hábito</Button>} /> :
-        <div className="grid gap-4 lg:grid-cols-2">{list.map((h) => { const streak = habitStreak(h, data.logs, today); const cons = habitConsistency(h, data.logs, today, 30); return (
+        <div className="grid gap-4 lg:grid-cols-2">{list.map((h) => { const streak = habitStreak(h, data.logs, today); const cons = habitConsistency(h, data.logs, today, Math.max(1, Math.min(30, Math.floor((Date.now() - h.createdAt) / 86400000) + 1))); return (
           <Section key={h.id} title={h.name} action={<div className="flex">
             <Button variant="ghost" size="icon" aria-label={`Editar ${h.name}`} onClick={() => edit.show(h)}><Pencil /></Button>
             <Button variant="ghost" size="icon" aria-label={h.archived ? "Reativar" : "Arquivar"} onClick={() => habitsRepo.update(h.id, { archived: !h.archived })}>{h.archived ? <ArchiveRestore /> : <Archive />}</Button>
@@ -42,7 +42,7 @@ function Page() {
               <button key={d} type="button" disabled={!due || h.archived} aria-pressed={done} aria-label={`${fmt(d, "EEEE d/MM")}${done ? ", feito" : ""}`} onClick={() => toggle(h, d)}
                 className={cn("flex h-14 min-w-11 flex-1 flex-col items-center justify-center rounded-xl border text-xs transition-colors", done ? "border-primary bg-primary text-primary-foreground" : due ? "border-input bg-card hover:bg-accent" : "border-transparent bg-muted/50 text-muted-foreground/50", d === today && !done && "ring-2 ring-ring")}>
                 <span className="capitalize">{fmt(d, "EEEEEE")}</span><span className="font-semibold">{done ? "✓" : fmt(d, "d")}</span></button>); })}</div>
-            <div className="flex flex-wrap items-center gap-4 text-sm"><span className="inline-flex items-center gap-1"><Flame className="h-4 w-4 text-primary" />{streak} {streak === 1 ? "dia" : "dias"} seguidos</span><span className="text-muted-foreground">{cons}% nos últimos 30 dias</span><CategoryDot id={h.categoryId} /></div>
+            <div className="flex flex-wrap items-center gap-4 text-sm"><span className="inline-flex items-center gap-1"><Flame className="h-4 w-4 text-primary" />{streak} {streak === 1 ? "dia" : "dias"} seguidos</span><span className="text-muted-foreground">{cons}% de constância (até 30 dias)</span><CategoryDot id={h.categoryId} /></div>
           </Section>); })}</div>}
       <HabitDialog open={edit.open} onOpenChange={edit.setOpen} habit={edit.item} />
     </div>
