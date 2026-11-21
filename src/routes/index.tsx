@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({ head: pageHead("Início", "Seu dia n
 
 function Dashboard() {
   const today = ymd(); const [newTask, setNewTask] = useState(false);
-  const d = useLiveQuery(async () => ({
+  const d = useLiveQuery(async () => ({ rlogs: await db.routineLogs.where("date").equals(today).toArray(),
     tasks: await db.tasks.toArray(), routines: await db.routines.toArray(), habits: (await db.habits.toArray()).filter((h) => !h.archived),
     hlogs: await db.habitLogs.where("date").equals(today).toArray(), mood: await db.moods.where("date").equals(today).first(),
     goals: (await db.goals.toArray()).filter((g) => g.status !== "concluida"), events: await db.events.where("date").equals(today).toArray(),
@@ -44,7 +44,7 @@ function Dashboard() {
         <Section title="Rotina de hoje" action={<Link to="/rotina" className="text-sm text-primary">Abrir</Link>}>
           {occ.length === 0 && d.events.length === 0 && d.sessions.length === 0 ? <EmptyState title="Agenda livre" /> :
             <ul className="space-y-2">
-              {[...occ.map((o) => ({ k: o.routine.id, t: o.start, e: o.end, title: o.title, kind: "Rotina" })), ...d.events.map((e) => ({ k: e.id, t: e.start ?? "", e: e.end ?? "", title: e.title, kind: "Evento" })), ...d.sessions.map((s) => ({ k: s.id, t: s.start, e: s.end, title: s.subject, kind: "Estudo" }))].sort((a, b) => a.t.localeCompare(b.t)).map((x) =>
+              {[...occ.map((o) => ({ k: o.routine.id, t: o.start, e: o.end, title: o.title + (d.rlogs.some((l) => l.routineId === o.routine.id) ? " ✓" : ""), kind: "Rotina" })), ...d.events.map((e) => ({ k: e.id, t: e.start ?? "", e: e.end ?? "", title: e.title, kind: "Evento" })), ...d.sessions.map((s) => ({ k: s.id, t: s.start, e: s.end, title: s.subject, kind: "Estudo" }))].sort((a, b) => a.t.localeCompare(b.t)).map((x) =>
                 <li key={x.k} className="flex items-center gap-3 rounded-xl bg-secondary/60 px-3 py-2"><span className="w-24 shrink-0 text-sm tabular-nums text-muted-foreground">{x.t}{x.e && `–${x.e}`}</span><span className="flex-1">{x.title}</span><span className="text-xs text-muted-foreground">{x.kind}</span></li>)}
             </ul>}
         </Section>

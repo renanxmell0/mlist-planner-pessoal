@@ -1,5 +1,5 @@
 import { addDays, parseISO, subDays, format } from "date-fns";
-import type { Goal, Habit, HabitLog, Routine, RoutineOverride, StudySession, Task } from "./types";
+import type { Goal, Habit, HabitLog, Routine, RoutineLog, RoutineOverride, StudySession, Task } from "./types";
 import { minutes } from "./dates";
 const ymd = (d: Date) => format(d, "yyyy-MM-dd");
 
@@ -53,3 +53,21 @@ export function taskSummary(tasks: Pick<Task, "status" | "date">[], date: string
 }
 
 export const lastNDays = (today: string, n: number) => Array.from({ length: n }, (_, i) => ymd(addDays(subDays(parseISO(today), n - 1), i)));
+
+/** Progresso da rotina num dia: ocorrências concluídas / ocorrências previstas. */
+export function routineDayProgress(occs: Pick<Occurrence, "routine" | "date">[], logs: Pick<RoutineLog, "routineId" | "date">[]) {
+  const done = occs.filter((o) => logs.some((l) => l.routineId === o.routine.id && l.date === o.date)).length;
+  return { total: occs.length, done, pct: percent(done, occs.length) };
+}
+
+/** Valida dados de uma rotina; retorna mensagem de erro ou null. */
+export function validateRoutine(r: { title: string; start: string; end: string; weekdays: number[]; startDate?: string; endDate?: string }): string | null {
+  if (!r.title.trim()) return "Informe um título.";
+  if (!r.start || !r.end) return "Informe início e fim.";
+  if (minutes(r.end) <= minutes(r.start)) return "O fim deve ser depois do início.";
+  if (r.weekdays.length === 0) return "Escolha pelo menos um dia da semana.";
+  if (r.startDate && r.endDate && r.endDate < r.startDate) return "A data final deve ser depois da inicial.";
+  return null;
+}
+
+export const habitsDueOn = <H extends Pick<Habit, "weekdays"> & { archived?: boolean }>(hs: H[], date: string) => hs.filter((h) => !h.archived && habitDueOn(h, date));
