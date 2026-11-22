@@ -71,3 +71,21 @@ export function validateRoutine(r: { title: string; start: string; end: string; 
 }
 
 export const habitsDueOn = <H extends Pick<Habit, "weekdays"> & { archived?: boolean }>(hs: H[], date: string) => hs.filter((h) => !h.archived && habitDueOn(h, date));
+
+/** Progresso de um cronograma: sessões concluídas / sessões planejadas. */
+export function planProgress(planId: string, ss: Pick<StudySession, "planId" | "done" | "start" | "end">[]) {
+  const mine = ss.filter((s) => s.planId === planId); const done = mine.filter((s) => s.done).length;
+  return { total: mine.length, done, pct: percent(done, mine.length), hours: studyHours(mine) };
+}
+export function validatePlan(p: { title: string; startDate: string; endDate: string }): string | null {
+  if (!p.title.trim()) return "Informe um título.";
+  if (!p.startDate || !p.endDate) return "Informe início e fim.";
+  if (p.endDate < p.startDate) return "A data final deve ser depois da inicial.";
+  return null;
+}
+export function validateSession(s: { subject: string; date: string; start: string; end: string }): string | null {
+  if (!s.subject.trim()) return "Informe a matéria.";
+  if (!s.date || !s.start || !s.end) return "Informe data, início e fim.";
+  if (minutes(s.end) <= minutes(s.start)) return "O fim deve ser depois do início.";
+  return null;
+}
