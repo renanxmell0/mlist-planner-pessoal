@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { habitDueOn, habitsDueOn, occurrencesOn, routineDayProgress, routineOccurrence, validateRoutine } from "./calc";
+import { occurrencesOn, routineDayProgress, routineOccurrence, validateRoutine } from "./calc";
 import type { Routine } from "./types";
 
 const r = (p: Partial<Routine> = {}): Routine => ({ id: "r", createdAt: 0, updatedAt: 0, title: "Academia", start: "07:00", end: "08:00", weekdays: [1, 3, 5], template: "personalizado", overrides: {}, ...p });
@@ -35,9 +35,3 @@ describe("rotina", () => {
   });
 });
 
-describe("hábitos", () => {
-  it("sem dias escolhidos = todo dia", () => expect(habitDueOn({ weekdays: [] }, "2026-11-17")).toBe(true));
-  it("arquivados não aparecem no dia", () => {
-    expect(habitsDueOn([{ weekdays: [], archived: true }, { weekdays: [2] }, { weekdays: [1] }], "2026-11-17")).toHaveLength(1);
-  });
-});

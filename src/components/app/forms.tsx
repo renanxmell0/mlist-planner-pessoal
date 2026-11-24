@@ -9,7 +9,7 @@ import { CategorySelect, Field } from "./common";
 import { repo } from "@/lib/repo";
 import { db } from "@/lib/db";
 import { ymd } from "@/lib/dates";
-import { MOODS, type CalEvent, type MoodValue, type Priority, type Reminder, type Task } from "@/lib/types";
+import { type CalEvent, type Priority, type Reminder, type Task } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export const tasksRepo = repo<Task>("tasks");
@@ -95,21 +95,3 @@ export function ReminderDialog({ open, onOpenChange }: { open: boolean; onOpenCh
   );
 }
 
-export async function saveMood(date: string, value: MoodValue, note?: string) {
-  const existing = await db.moods.where("date").equals(date).first();
-  const r = repo<import("@/lib/types").MoodEntry>("moods");
-  if (existing) await r.update(existing.id, { value, note: note ?? existing.note }); else await r.create({ date, value, note });
-}
-
-export function MoodPicker({ value, onPick, size = "md" }: { value?: MoodValue; onPick: (v: MoodValue) => void; size?: "md" | "lg" }) {
-  return (
-    <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Humor">
-      {MOODS.map((m) => (
-        <button key={m.value} type="button" role="radio" aria-checked={value === m.value} onClick={() => onPick(m.value)}
-          className={cn("flex flex-col items-center rounded-2xl border px-3 py-2 transition-all", size === "lg" ? "min-w-20" : "min-w-16", value === m.value ? "border-primary bg-accent shadow-sm" : "border-transparent bg-secondary/60 hover:bg-accent")}>
-          <span className={size === "lg" ? "text-3xl" : "text-2xl"} aria-hidden>{m.emoji}</span><span className="text-xs">{m.label}</span>
-        </button>
-      ))}
-    </div>
-  );
-}

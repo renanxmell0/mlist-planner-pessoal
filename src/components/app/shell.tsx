@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
-import { BarChart3, BookOpen, CalendarDays, CheckSquare, Clock, Flag, Heart, Home, Lock, Menu, NotebookPen, Plus, Search, Settings, Sparkles, Wifi, WifiOff } from "lucide-react";
+import { BarChart3, BookOpen, CalendarDays, CheckSquare, Clock, Flag, Home, Menu, Plus, Search, Settings, Wifi, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
@@ -12,8 +12,6 @@ import { Flower } from "./common";
 import { EventDialog, ReminderDialog, TaskDialog } from "./forms";
 import { db } from "@/lib/db";
 import { checkReminders } from "@/lib/reminders";
-import { biometricSupported, getLock, isUnlocked, unlock, verifyBiometric } from "@/lib/crypto";
-import { getSetting } from "@/lib/repo";
 import { cn } from "@/lib/utils";
 
 export const NAV = [
@@ -22,10 +20,7 @@ export const NAV = [
   { to: "/rotina", label: "Minha Rotina", icon: Clock },
   { to: "/estudos", label: "Cronogramas de Estudos", icon: BookOpen },
   { to: "/calendario", label: "Calendário", icon: CalendarDays },
-  { to: "/habitos", label: "Hábitos", icon: Sparkles },
   { to: "/metas", label: "Metas", icon: Flag },
-  { to: "/diario", label: "Diário", icon: NotebookPen },
-  { to: "/humor", label: "Humor", icon: Heart },
   { to: "/progresso", label: "Progresso", icon: BarChart3 },
   { to: "/configuracoes", label: "Configurações", icon: Settings },
 ] as const;
@@ -57,21 +52,19 @@ function GlobalSearch({ open, onOpenChange }: { open: boolean; onOpenChange: (o:
   const results = useLiveQuery(async () => {
     const s = q.trim().toLowerCase(); if (s.length < 2) return [];
     const has = (t?: string) => !!t && t.toLowerCase().includes(s);
-    const [tasks, events, routines, habits, goals, plans, journal] = await Promise.all([db.tasks.toArray(), db.events.toArray(), db.routines.toArray(), db.habits.toArray(), db.goals.toArray(), db.studyPlans.toArray(), db.journal.toArray()]);
+    const [tasks, events, routines, goals, plans] = await Promise.all([db.tasks.toArray(), db.events.toArray(), db.routines.toArray(), db.goals.toArray(), db.studyPlans.toArray()]);
     return [
       ...tasks.filter((x) => has(x.title) || has(x.notes)).map((x) => ({ id: x.id, label: x.title, group: "Tarefas", to: "/tarefas" })),
       ...events.filter((x) => has(x.title)).map((x) => ({ id: x.id, label: `${x.title} · ${x.date.split("-").reverse().join("/")}`, group: "Eventos", to: "/calendario" })),
       ...routines.filter((x) => has(x.title)).map((x) => ({ id: x.id, label: x.title, group: "Rotina", to: "/rotina" })),
-      ...habits.filter((x) => has(x.name)).map((x) => ({ id: x.id, label: x.name, group: "Hábitos", to: "/habitos" })),
       ...goals.filter((x) => has(x.title)).map((x) => ({ id: x.id, label: x.title, group: "Metas", to: "/metas" })),
       ...plans.filter((x) => has(x.title) || x.subjects.some(has)).map((x) => ({ id: x.id, label: x.title, group: "Estudos", to: "/estudos" })),
-      ...journal.filter((x) => !x.enc && (has(x.title) || has(x.content))).map((x) => ({ id: x.id, label: x.title || "Sem título", group: "Diário", to: "/diario" })),
     ].slice(0, 40);
   }, [q]) ?? [];
   const groups = [...new Set(results.map((r) => r.group))];
   return (
     <CommandDialog open={open} onOpenChange={(o) => { onOpenChange(o); if (!o) setQ(""); }}>
-      <CommandInput placeholder="Buscar em tudo… (entradas privadas não aparecem)" value={q} onValueChange={setQ} />
+      <CommandInput placeholder="Buscar em tudo…" value={q} onValueChange={setQ} />
       <CommandList>
         <CommandEmpty>{q.trim().length < 2 ? "Digite pelo menos 2 letras." : "Nada encontrado."}</CommandEmpty>
         {groups.map((g) => <CommandGroup key={g} heading={g}>{results.filter((r) => r.group === g).map((r) => <CommandItem key={r.id} value={`${r.label}-${r.id}`} onSelect={() => { onOpenChange(false); nav({ to: r.to }); }}>{r.label}</CommandItem>)}</CommandGroup>)}
@@ -80,27 +73,10 @@ function GlobalSearch({ open, onOpenChange }: { open: boolean; onOpenChange: (o:
   );
 }
 
-function LockScreen({ onUnlock }: { onUnlock: () => void }) {
-  const [pw, setPw] = useState(""); const [err, setErr] = useState(""); const [bio, setBio] = useState(false); const [busy, setBusy] = useState(false);
-  useEffect(() => { void (async () => setBio((await biometricSupported()) && !!(await getSetting<string | null>("webauthn", null))))(); }, []);
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background p-6">
-      <form className="card-soft w-full max-w-sm space-y-4 p-8 text-center" onSubmit={async (e) => { e.preventDefault(); setBusy(true); const ok = await unlock(pw); setBusy(false); if (ok) onUnlock(); else setErr("Senha incorreta."); }}>
-        <Flower className="mx-auto h-8 w-8" /><h1 className="text-3xl">MList</h1><p className="text-sm text-muted-foreground">Digite sua senha para abrir.</p>
-        <Input type="password" className="h-12" autoFocus value={pw} onChange={(e) => setPw(e.target.value)} aria-label="Senha" />
-        {err && <p className="text-sm text-destructive" role="alert">{err}</p>}
-        <Button type="submit" className="h-12 w-full" disabled={busy}><Lock /> Desbloquear</Button>
-        {bio && <Button type="button" variant="outline" className="h-12 w-full" onClick={async () => { if (await verifyBiometric()) setErr("Biometria confirmada. A senha ainda é necessária para abrir o conteúdo criptografado."); else setErr("Biometria não confirmada."); }}>Usar Face ID / Touch ID</Button>}
-      </form>
-    </div>
-  );
-}
-
 export function AppShell({ children }: { children: ReactNode }) {
   const [drawer, setDrawer] = useState(false); const [search, setSearch] = useState(false);
   const [dlg, setDlg] = useState<"task" | "event" | "reminder" | null>(null);
-  const [locked, setLocked] = useState(false); const online = useOnline();
-  useEffect(() => { void getLock().then((l) => setLocked(!!l && !isUnlocked())); }, []);
+  const online = useOnline();
   useEffect(() => { void checkReminders(); const t = setInterval(() => void checkReminders(), 30000); return () => clearInterval(t); }, []);
   useEffect(() => { const k = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setSearch(true); } }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, []);
   return (
@@ -124,7 +100,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       <TaskDialog open={dlg === "task"} onOpenChange={(o) => !o && setDlg(null)} />
       <EventDialog open={dlg === "event"} onOpenChange={(o) => !o && setDlg(null)} />
       <ReminderDialog open={dlg === "reminder"} onOpenChange={(o) => !o && setDlg(null)} />
-      {locked && <LockScreen onUnlock={() => setLocked(false)} />}
       <Toaster position="top-center" richColors={false} />
     </div>
   );

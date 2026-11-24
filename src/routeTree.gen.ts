@@ -12,10 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
-import { Route as DiarioRouteImport } from './routes/diario'
 import { Route as EstudosRouteImport } from './routes/estudos'
-import { Route as HabitosRouteImport } from './routes/habitos'
-import { Route as HumorRouteImport } from './routes/humor'
 import { Route as MetasRouteImport } from './routes/metas'
 import { Route as ProgressoRouteImport } from './routes/progresso'
 import { Route as RotinaRouteImport } from './routes/rotina'
@@ -36,24 +33,9 @@ const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
   path: '/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DiarioRoute = DiarioRouteImport.update({
-  id: '/diario',
-  path: '/diario',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const EstudosRoute = EstudosRouteImport.update({
   id: '/estudos',
   path: '/estudos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HabitosRoute = HabitosRouteImport.update({
-  id: '/habitos',
-  path: '/habitos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HumorRoute = HumorRouteImport.update({
-  id: '/humor',
-  path: '/humor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MetasRoute = MetasRouteImport.update({
@@ -81,10 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calendario': typeof CalendarioRoute
   '/configuracoes': typeof ConfiguracoesRoute
-  '/diario': typeof DiarioRoute
   '/estudos': typeof EstudosRoute
-  '/habitos': typeof HabitosRoute
-  '/humor': typeof HumorRoute
   '/metas': typeof MetasRoute
   '/progresso': typeof ProgressoRoute
   '/rotina': typeof RotinaRoute
@@ -94,10 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calendario': typeof CalendarioRoute
   '/configuracoes': typeof ConfiguracoesRoute
-  '/diario': typeof DiarioRoute
   '/estudos': typeof EstudosRoute
-  '/habitos': typeof HabitosRoute
-  '/humor': typeof HumorRoute
   '/metas': typeof MetasRoute
   '/progresso': typeof ProgressoRoute
   '/rotina': typeof RotinaRoute
@@ -108,10 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/calendario': typeof CalendarioRoute
   '/configuracoes': typeof ConfiguracoesRoute
-  '/diario': typeof DiarioRoute
   '/estudos': typeof EstudosRoute
-  '/habitos': typeof HabitosRoute
-  '/humor': typeof HumorRoute
   '/metas': typeof MetasRoute
   '/progresso': typeof ProgressoRoute
   '/rotina': typeof RotinaRoute
@@ -123,10 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/calendario'
     | '/configuracoes'
-    | '/diario'
     | '/estudos'
-    | '/habitos'
-    | '/humor'
     | '/metas'
     | '/progresso'
     | '/rotina'
@@ -136,10 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/calendario'
     | '/configuracoes'
-    | '/diario'
     | '/estudos'
-    | '/habitos'
-    | '/humor'
     | '/metas'
     | '/progresso'
     | '/rotina'
@@ -149,10 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/calendario'
     | '/configuracoes'
-    | '/diario'
     | '/estudos'
-    | '/habitos'
-    | '/humor'
     | '/metas'
     | '/progresso'
     | '/rotina'
@@ -163,10 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CalendarioRoute: typeof CalendarioRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
-  DiarioRoute: typeof DiarioRoute
   EstudosRoute: typeof EstudosRoute
-  HabitosRoute: typeof HabitosRoute
-  HumorRoute: typeof HumorRoute
   MetasRoute: typeof MetasRoute
   ProgressoRoute: typeof ProgressoRoute
   RotinaRoute: typeof RotinaRoute
@@ -196,32 +157,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/diario': {
-      id: '/diario'
-      path: '/diario'
-      fullPath: '/diario'
-      preLoaderRoute: typeof DiarioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/estudos': {
       id: '/estudos'
       path: '/estudos'
       fullPath: '/estudos'
       preLoaderRoute: typeof EstudosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/habitos': {
-      id: '/habitos'
-      path: '/habitos'
-      fullPath: '/habitos'
-      preLoaderRoute: typeof HabitosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/humor': {
-      id: '/humor'
-      path: '/humor'
-      fullPath: '/humor'
-      preLoaderRoute: typeof HumorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/metas': {
@@ -259,10 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CalendarioRoute: CalendarioRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
-  DiarioRoute: DiarioRoute,
   EstudosRoute: EstudosRoute,
-  HabitosRoute: HabitosRoute,
-  HumorRoute: HumorRoute,
   MetasRoute: MetasRoute,
   ProgressoRoute: ProgressoRoute,
   RotinaRoute: RotinaRoute,

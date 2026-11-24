@@ -7,9 +7,9 @@ describe("validação de backup", () => {
   it("rejeita arquivo de outro app", () => expect(validateBackup({ ...ok, app: "X" }).ok).toBe(false));
   it("rejeita versão futura", () => expect(validateBackup({ ...ok, version: 99 }).ok).toBe(false));
   it("ignora duplicados e inválidos", () => {
-    const r = validateBackup({ ...ok, data: { tasks: [ok.data.tasks[0], ok.data.tasks[0], { id: "b" }], moods: [{ id: "m", createdAt: 1, updatedAt: 1, date: "2026-11-19", value: 9 }] } });
-    expect(r.counts.tasks).toBe(1); expect(r.counts.moods).toBe(0); expect(r.skipped).toBe(3);
+    const r = validateBackup({ ...ok, data: { tasks: [ok.data.tasks[0], ok.data.tasks[0], { id: "b" }], moods: [{ id: "m", createdAt: 1, updatedAt: 1, date: "2026-11-19", value: 4 }], journal: [{ id: "j", createdAt: 1, updatedAt: 1, date: "2026-11-19" }] } });
+    expect(r.counts.tasks).toBe(1); expect(r.skipped).toBe(2); expect(r.data).not.toHaveProperty("moods"); expect(r.data).not.toHaveProperty("journal");
   });
   it("rejeita lista malformada", () => expect(validateBackup({ ...ok, data: { tasks: "x" } }).ok).toBe(false));
-  it("nunca importa configuração de bloqueio", () => expect(validateBackup({ ...ok, settings: [{ key: "lock", value: 1 }, { key: "tema", value: 2 }] }).settings).toEqual([{ key: "tema", value: 2 }]));
+  it("nunca importa configuração de bloqueio", () => expect(validateBackup({ ...ok, settings: [{ key: "lock", value: 1 }, { key: "webauthn", value: 1 }, { key: "tema", value: 2 }] }).settings).toEqual([{ key: "tema", value: 2 }]));
 });

@@ -84,7 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "MList — planner pessoal" },
-      { name: "description", content: "Planner pessoal offline para iPad: tarefas, rotina, estudos, hábitos, metas, diário e humor." },
+      { name: "description", content: "Planner pessoal offline para iPad: tarefas, rotina, estudos, calendário e metas." },
       { name: "theme-color", content: "#f7ece9" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "mobile-web-app-capable", content: "yes" },

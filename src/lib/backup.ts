@@ -1,16 +1,17 @@
 import { z } from "zod";
-import { db, DATA_TABLES, type DataTable } from "./db";
+import { db, DATA_TABLES, REMOVED_SETTINGS, type DataTable } from "./db";
 
 export const BACKUP_VERSION = 1;
+const isRemovedSetting = (k: string) => (REMOVED_SETTINGS as readonly string[]).includes(k);
+/** Seções de backups antigos (Diário, Hábitos, Humor) são ignoradas na importação. */
 const base = z.object({ id: z.string().min(1), createdAt: z.number(), updatedAt: z.number() }).passthrough();
 const withDate = base.extend({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) });
 const schemas: Record<DataTable, z.ZodTypeAny> = {
   tasks: base.extend({ title: z.string() }), events: withDate.extend({ title: z.string() }),
   routines: base.extend({ title: z.string(), weekdays: z.array(z.number().int().min(0).max(6)), start: z.string(), end: z.string() }),
-  routineLogs: withDate.extend({ routineId: z.string() }), habits: base.extend({ name: z.string(), weekdays: z.array(z.number()) }),
-  habitLogs: withDate.extend({ habitId: z.string() }), goals: base.extend({ title: z.string(), steps: z.array(z.any()) }),
+  routineLogs: withDate.extend({ routineId: z.string() }),
+  goals: base.extend({ title: z.string(), steps: z.array(z.any()) }),
   studyPlans: base.extend({ title: z.string() }), studySessions: withDate.extend({ planId: z.string() }),
-  journal: withDate, moods: withDate.extend({ value: z.number().int().min(1).max(5) }),
   reminders: base.extend({ title: z.string(), at: z.string() }), categories: base.extend({ name: z.string() }),
 };
 
@@ -47,14 +48,14 @@ export function validateBackup(input: unknown): ValidationResult {
     }
     counts[t] = data[t].length;
   }
-  const settings = Array.isArray(m.settings) ? (m.settings as { key: string; value: unknown }[]).filter((s) => s && typeof s.key === "string" && s.key !== "lock" && s.key !== "webauthn") : [];
+  const settings = Array.isArray(m.settings) ? (m.settings as { key: string; value: unknown }[]).filter((s) => s && typeof s.key === "string" && !isRemovedSetting(s.key)) : [];
   return { ok: errors.length === 0, errors, counts, skipped, data, settings };
 }
 
 export async function exportBackup(): Promise<BackupFile> {
   const data = {} as Record<DataTable, unknown[]>;
   for (const t of DATA_TABLES) data[t] = await db.table(t).toArray();
-  const settings = (await db.settings.toArray()).filter((s) => s.key !== "lock" && s.key !== "webauthn");
+  const settings = (await db.settings.toArray()).filter((s) => !isRemovedSetting(s.key));
   return { app: "MList", version: BACKUP_VERSION, exportedAt: new Date().toISOString(), data, settings };
 }
 

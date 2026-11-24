@@ -28,3 +28,4 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+- Removed features (journal, habits, moods, app lock) are deleted via Dexie schema versions that null their tables and purge their settings keys; never reintroduce them without a new version — keeps user devices clean.

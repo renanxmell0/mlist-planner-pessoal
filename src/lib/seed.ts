@@ -18,10 +18,6 @@ export async function seedDemo() {
     { ...b(), title: "Aula online", start: "08:00", end: "11:30", weekdays: [1, 2, 3, 4, 5], template: "dias-uteis", overrides: {}, categoryId: cat.estudos.id },
     { ...b(), title: "Caminhada no parque", start: "09:00", end: "10:00", weekdays: [6], template: "sabado", overrides: {}, categoryId: cat.saude.id },
   ]);
-  const h1 = { ...b(), name: "Beber 2L de água", weekdays: [], goal: "8 copos", categoryId: cat.saude.id };
-  const h2 = { ...b(), name: "Ler 20 páginas", weekdays: [1, 2, 3, 4, 5], categoryId: cat.pessoal.id };
-  await db.habits.bulkPut([h1, h2]);
-  await db.habitLogs.bulkPut([-1, -2, -3].map((n) => ({ ...b(), habitId: h1.id, date: d(n) })));
   await db.goals.bulkPut([{ ...b(), title: "Aprender o básico de espanhol", categoryId: cat.estudos.id, deadline: d(60), status: "em-andamento", steps: [{ id: uid(), title: "Escolher um curso", done: true }, { id: uid(), title: "Concluir módulo 1", done: false }, { id: uid(), title: "Conversar 10 min", done: false }] }]);
   const plan = { ...b(), title: "Preparação ENEM", startDate: d(-7), endDate: d(90), subjects: ["Matemática", "Redação", "Química"], status: "em-andamento" as const };
   await db.studyPlans.bulkPut([plan]);
@@ -29,6 +25,4 @@ export async function seedDemo() {
     { ...b(), planId: plan.id, subject: "Matemática", date: d(-1), start: "14:00", end: "15:30", done: true },
     { ...b(), planId: plan.id, subject: "Redação", date: d(0), start: "16:00", end: "17:00", done: false },
   ]);
-  await db.moods.bulkPut([{ ...b(), date: d(-1), value: 4, note: "Dia produtivo" }, { ...b(), date: d(-2), value: 3 }]);
-  await db.journal.bulkPut([{ ...b(), date: d(-1), title: "Um bom começo", content: "Hoje organizei minha semana no MList e me senti mais leve.", private: false }]);
 }

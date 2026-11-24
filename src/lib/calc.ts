@@ -1,5 +1,5 @@
 import { addDays, parseISO, subDays, format } from "date-fns";
-import type { Goal, Habit, HabitLog, Routine, RoutineLog, RoutineOverride, StudySession, Task } from "./types";
+import type { Goal, Routine, RoutineLog, RoutineOverride, StudySession, Task } from "./types";
 import { minutes } from "./dates";
 const ymd = (d: Date) => format(d, "yyyy-MM-dd");
 
@@ -9,28 +9,6 @@ export function goalProgress(g: Pick<Goal, "steps" | "status" | "manualProgress"
   if (g.status === "concluida") return 100;
   if (g.steps.length) return percent(g.steps.filter((s) => s.done).length, g.steps.length);
   return Math.max(0, Math.min(100, g.manualProgress ?? 0));
-}
-
-export const habitDueOn = (h: Pick<Habit, "weekdays">, date: string) => h.weekdays.length === 0 || h.weekdays.includes(parseISO(date).getDay());
-
-/** Sequência atual: dias devidos consecutivos concluídos até hoje (hoje pendente não quebra). */
-export function habitStreak(h: Pick<Habit, "weekdays" | "id">, logs: Pick<HabitLog, "habitId" | "date">[], today: string): number {
-  const done = new Set(logs.filter((l) => l.habitId === h.id).map((l) => l.date));
-  let d = parseISO(today); let streak = 0;
-  if (!done.has(today)) d = subDays(d, 1);
-  for (let i = 0; i < 730; i++) {
-    const key = ymd(d);
-    if (habitDueOn(h, key)) { if (done.has(key)) streak++; else break; }
-    d = subDays(d, 1);
-  }
-  return streak;
-}
-
-export function habitConsistency(h: Pick<Habit, "weekdays" | "id">, logs: Pick<HabitLog, "habitId" | "date">[], today: string, days = 30): number {
-  const done = new Set(logs.filter((l) => l.habitId === h.id).map((l) => l.date));
-  let due = 0, hit = 0;
-  for (let i = 0; i < days; i++) { const key = ymd(subDays(parseISO(today), i)); if (habitDueOn(h, key)) { due++; if (done.has(key)) hit++; } }
-  return percent(hit, due);
 }
 
 export interface Occurrence { routine: Routine; date: string; title: string; start: string; end: string }
@@ -69,8 +47,6 @@ export function validateRoutine(r: { title: string; start: string; end: string; 
   if (r.startDate && r.endDate && r.endDate < r.startDate) return "A data final deve ser depois da inicial.";
   return null;
 }
-
-export const habitsDueOn = <H extends Pick<Habit, "weekdays"> & { archived?: boolean }>(hs: H[], date: string) => hs.filter((h) => !h.archived && habitDueOn(h, date));
 
 /** Progresso de um cronograma: sessões concluídas / sessões planejadas. */
 export function planProgress(planId: string, ss: Pick<StudySession, "planId" | "done" | "start" | "end">[]) {

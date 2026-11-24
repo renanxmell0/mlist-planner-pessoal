@@ -7,16 +7,16 @@ import { Button } from "@/components/ui/button";
 import { EmptyState, Loading, PageHeader, Section } from "@/components/app/common";
 import { db } from "@/lib/db";
 import { fmt, ymd } from "@/lib/dates";
-import { habitsDueOn, occurrencesOn } from "@/lib/calc";
+import { occurrencesOn } from "@/lib/calc";
 import { WEEKDAYS } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { pageHead } from "@/lib/meta";
 
-export const Route = createFileRoute("/calendario")({ head: pageHead("Calendário", "Calendário do MList com tarefas, eventos, rotina e hábitos de cada dia."), component: Page });
+export const Route = createFileRoute("/calendario")({ head: pageHead("Calendário", "Calendário do MList com tarefas, eventos, rotina e estudos de cada dia."), component: Page });
 
 function Page() {
   const [month, setMonth] = useState(() => startOfMonth(new Date())); const [sel, setSel] = useState(ymd());
-  const data = useLiveQuery(async () => ({ tasks: await db.tasks.toArray(), events: await db.events.toArray(), routines: await db.routines.toArray(), habits: await db.habits.toArray(), hlogs: await db.habitLogs.toArray(), sessions: await db.studySessions.toArray() }), []);
+  const data = useLiveQuery(async () => ({ tasks: await db.tasks.toArray(), events: await db.events.toArray(), routines: await db.routines.toArray(), sessions: await db.studySessions.toArray() }), []);
   if (!data) return <Loading />;
   const days = eachDayOfInterval({ start: startOfWeek(month), end: endOfWeek(endOfMonth(month)) }).map(ymd);
   const items = (d: string) => [
@@ -25,7 +25,7 @@ function Page() {
     ...data.sessions.filter((s) => s.date === d).map((s) => ({ k: s.id, t: s.start, title: s.subject, kind: "Estudo" })),
     ...data.tasks.filter((t) => t.date === d).map((t) => ({ k: t.id, t: t.time ?? "", title: t.title + (t.status === "concluida" ? " ✓" : ""), kind: "Tarefa" })),
   ].sort((a, b) => a.t.localeCompare(b.t));
-  const selItems = items(sel); const selHabits = habitsDueOn(data.habits, sel);
+  const selItems = items(sel);
   return (
     <div className="space-y-6">
       <PageHeader title="Calendário" />
@@ -41,9 +41,8 @@ function Page() {
               <span>{fmt(d, "d")}</span>{n > 0 && <span className={cn("mt-1 rounded-full px-1.5 text-[10px]", d === sel ? "bg-primary-foreground/25" : "bg-secondary text-secondary-foreground")}>{n}</span>}</button>); })}</div>
         </Section>
         <Section title={fmt(sel, "EEEE, d/MM")} className="[&_h2]:capitalize">
-          {selItems.length === 0 && selHabits.length === 0 ? <EmptyState title="Dia livre" /> : <div className="space-y-4">
+          {selItems.length === 0 ? <EmptyState title="Dia livre" /> : <div className="space-y-4">
             {selItems.length > 0 && <ul className="space-y-2">{selItems.map((x) => <li key={x.k} className="flex gap-3 rounded-xl bg-secondary/60 px-3 py-2 text-sm"><span className="w-12 shrink-0 tabular-nums text-muted-foreground">{x.t}</span><span className="flex-1">{x.title}</span><span className="text-xs text-muted-foreground">{x.kind}</span></li>)}</ul>}
-            {selHabits.length > 0 && <div><p className="mb-2 text-sm font-medium">Hábitos</p><div className="flex flex-wrap gap-1.5">{selHabits.map((h) => { const done = data.hlogs.some((l) => l.habitId === h.id && l.date === sel); return <span key={h.id} className={cn("rounded-full border px-3 py-1 text-xs", done ? "border-primary bg-primary text-primary-foreground" : "border-input")}>{done ? "✓ " : ""}{h.name}</span>; })}</div></div>}
           </div>}
         </Section>
       </div>
