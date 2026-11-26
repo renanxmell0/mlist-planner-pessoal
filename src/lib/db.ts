@@ -22,6 +22,10 @@ export class MListDB extends Dexie {
     // v2: apaga de verdade os dados de Diário, Hábitos e Humor e a senha/biometria do diário.
     this.version(2).stores({ journal: null, habits: null, habitLogs: null, moods: null })
       .upgrade((tx) => tx.table("settings").bulkDelete([...REMOVED_SETTINGS]));
+    // v3: adiciona índice para pesquisar categorias pelo nome.
+    this.version(3).stores({
+      categories: "id, name",
+    });
   }
 }
 export const db = new MListDB();

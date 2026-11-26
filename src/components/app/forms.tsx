@@ -64,7 +64,10 @@ export function EventDialog({ open, onOpenChange, event, defaultDate }: { open: 
   return (
     <FormDialog open={open} onOpenChange={onOpenChange} title={event ? "Editar evento" : "Novo evento"} onSubmit={async () => {
       if (!f.title.trim() || !f.date) { setErr("Título e data são obrigatórios."); return false; }
-      if (f.start && f.end && f.end <= f.start) { setErr("O término deve ser depois do início."); return false; }
+      if (f.start && f.end && f.end === f.start) {
+        setErr("O término não pode ser igual ao início.");
+        return false;
+      }
       const data = { title: f.title.trim(), date: f.date, start: f.start || undefined, end: f.end || undefined, notes: f.notes || undefined, categoryId: f.categoryId };
       if (event) await eventsRepo.update(event.id, data); else await eventsRepo.create(data);
       toast.success(event ? "Evento atualizado" : "Evento criado");
